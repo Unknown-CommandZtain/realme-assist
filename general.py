@@ -11,7 +11,7 @@ from utils import delay_group, delay_group_preview, delay_html, remove_message
 
 def banana(update: Update, context: CallbackContext):
     # Using your exact local path (the 'r' prevents backslash errors)
-    file_path = r"C:\Users\Unknown_CommandZtain\Documents\realme Assist\resources\where_update.png"
+    file_path = "resources/where_update.png"
     
     with open(file_path, "rb") as photo_file:
         update.message.reply_photo(
