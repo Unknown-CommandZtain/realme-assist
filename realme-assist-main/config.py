@@ -1,0 +1,19 @@
+"""Contains variables used throughout the project."""
+import os
+
+PORT = int(os.environ.get("PORT", 5000))
+
+# These securely pull your secrets from Railway's Variables tab!
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///local_memory.db")
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+
+CONTROL_GROUP = -1001228437777
+OFFTOPIC_GROUP = -1001415779011
+SUPPORT_GROUP = -1001374176745
+
+# This pulls your personal ID from Railway
+MY_ID = int(os.environ.get("ADMIN_ID", 0))
+
+# You are now the ONLY Admin and the ONLY Verified User
+ADMINS = (MY_ID,)
+VERIFIED_USERS = {MY_ID}
