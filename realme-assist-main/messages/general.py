@@ -49,36 +49,6 @@ def search_realme_model(rmx_code):
         print(f"Web search failed for {rmx_code}: {e}")
         
     return "Unknown Realme Device"
-    }
-    
-    try:
-        response = requests.get(url, headers=headers, timeout=5)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # Grab the very first search result title
-            first_result = soup.find('h2', class_='result__title')
-            if first_result:
-                title = first_result.text.strip()
-                
-                # 1. Chop off website names (like "- GSMArena")
-                clean_title = title.split('|')[0].split('-')[0]
-                
-                # 2. Remove the RMX code and its parentheses from the title
-                clean_title = re.sub(rf'\(?{rmx_code}\)?', '', clean_title, flags=re.IGNORECASE)
-                
-                # 3. Strip out common junk words found in search results
-                junk_words = [r"specs?", r"review", r"price", r"release date", r"gsmarena", r"kimovil", r"unboxing"]
-                for word in junk_words:
-                    clean_title = re.sub(rf'(?i)\b{word}\b', '', clean_title)
-                
-                # 4. Clean up any leftover double spaces and return the pure phone name!
-                return re.sub(r'\s+', ' ', clean_title).strip()
-                
-    except Exception as e:
-        print(f"Web search failed for {rmx_code}: {e}")
-        
-    return "Unknown Realme Device"
 
 def banana(update: Update, context: CallbackContext):
     current_dir = os.path.dirname(os.path.abspath(__file__))
