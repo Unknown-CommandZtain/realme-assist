@@ -122,6 +122,7 @@ def benchmark(update: Update, context: CallbackContext):
     else:
         delay_group(update, context, norm_text.format(update.message.from_user.name, text))
 
+import time
 import config
 from google import genai
 from google.genai import types
@@ -139,21 +140,40 @@ def chat_with_gemini(update: Update, context: CallbackContext):
     bot_username = f"@{context.bot.username}"
     user_text = update.message.text.replace(bot_username, "").strip()
 
-    try:
-        context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
-        response = ai_client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_text,
-            config=types.GenerateContentConfig(
-                system_instruction=(
-                    "You are Realme Assist, a super-intelligent, witty AI assistant. "
-                    "CRITICAL RULE: You are ONLY allowed to answer questions and discuss topics "
-                    "related to Information Technology (IT), tech, smartphones, software, programming, "
-                    "and Android/Realme UI. If a user asks about anything outside of IT, politely decline "
-                    "and tell them to look it up on a search engine instead. Keep your response brief."
+    # Tell the user the bot is typing
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
+
+    # === SMART RETRY LOOP ===
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = ai_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=user_text,
+                config=types.GenerateContentConfig(
+                    system_instruction=(
+                        "You are Realme Assist, a super-intelligent, witty AI assistant. "
+                        "CRITICAL RULE: You are ONLY allowed to answer questions and discuss topics "
+                        "related to Information Technology (IT), tech, smartphones, software, programming, "
+                        "and Android/Realme UI. If a user asks about anything outside of IT, politely decline "
+                        "and tell them to look it up on a search engine instead. Keep your response brief."
+                    )
                 )
             )
-        )
-        update.message.reply_text(response.text, parse_mode=ParseMode.MARKDOWN)
-    except Exception as e:
-        print(f"Error handling Gemini request: {e}")
+            # If successful, send message and break out of the loop
+            update.message.reply_text(response.text, parse_mode=ParseMode.MARKDOWN)
+            break 
+            
+        except Exception as e:
+            error_message = str(e)
+            print(f"Attempt {attempt + 1} failed: {error_message}")
+            
+            # If it's a 503 overload, wait 2 seconds and try again
+            if "503" in error_message and attempt < max_retries - 1:
+                time.sleep(2)
+                continue
+                
+            # If it's a different error OR we ran out of retries, let the user know gently
+            if attempt == max_retries - 1:
+                update.message.reply_text("My brain servers are experiencing a massive traffic jam right now! 🚦 Give me a few minutes and try again.")
+            break
