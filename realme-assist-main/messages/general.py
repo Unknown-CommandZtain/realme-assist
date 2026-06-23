@@ -168,12 +168,17 @@ def chat_with_gemini(update: Update, context: CallbackContext):
             error_message = str(e)
             print(f"Attempt {attempt + 1} failed: {error_message}")
             
-            # If it's a 503 overload, wait 2 seconds and try again
-            if "503" in error_message and attempt < max_retries - 1:
-                time.sleep(2)
-                continue
-                
-            # If it's a different error OR we ran out of retries, let the user know gently
+            # If we hit the minute speed limit (429) or server overload (503)
+            if "429" in error_message or "503" in error_message:
+                if attempt < max_retries - 1:
+                    print("Speed limit or overload hit! Pausing for 20 seconds...")
+                    time.sleep(20) # Wait out the 18-second penalty
+                    continue
+                    
+            # If we run out of retries or hit a completely different error
             if attempt == max_retries - 1:
-                update.message.reply_text("My brain servers are experiencing a massive traffic jam right now! 🚦 Give me a few minutes and try again.")
+                update.message.reply_text(
+                    "Whoa, slow down! I'm getting too many messages at once. 🚦 "
+                    "Give me about 20 seconds to catch my breath and try asking again!"
+                )
             break
