@@ -7,6 +7,9 @@ PORT = int(os.environ.get("PORT", 5000))
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///local_memory.db")
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
+# Added SerpApi Key to pull from Railway Variables securely
+SERPAPI_KEY = os.environ.get("SERPAPI_KEY", "") 
+
 CONTROL_GROUP = -1001228437777
 OFFTOPIC_GROUP = -1001415779011
 SUPPORT_GROUP = -1001374176745
