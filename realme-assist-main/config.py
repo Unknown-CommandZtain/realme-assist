@@ -20,3 +20,5 @@ MY_ID = int(os.environ.get("ADMIN_ID", 0))
 # You are now the ONLY Admin and the ONLY Verified User
 ADMINS = (MY_ID,)
 VERIFIED_USERS = {MY_ID}
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
