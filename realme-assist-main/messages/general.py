@@ -168,17 +168,27 @@ def chat_with_gemini(update: Update, context: CallbackContext):
             error_message = str(e)
             print(f"Attempt {attempt + 1} failed: {error_message}")
             
-            # If we hit the minute speed limit (429) or server overload (503)
+            # If we hit the speed limit (429) or server overload (503)
             if "429" in error_message or "503" in error_message:
                 if attempt < max_retries - 1:
-                    print("Speed limit or overload hit! Pausing for 20 seconds...")
-                    time.sleep(20) # Wait out the 18-second penalty
+                    
+                    # Dynamically read the error to find out exactly how long Google wants us to wait
+                    match = re.search(r'retry in (\d+\.?\d*)s', error_message)
+                    if match:
+                        # Extract the exact seconds and add 2 extra seconds just to be safe
+                        wait_time = float(match.group(1)) + 2.0
+                    else:
+                        # Fallback just in case the error message format changes
+                        wait_time = 30.0 
+                        
+                    print(f"Speed limit hit! Pausing for exactly {wait_time} seconds...")
+                    time.sleep(wait_time)
                     continue
                     
-            # If we run out of retries or hit a completely different error
+            # If we completely run out of retries
             if attempt == max_retries - 1:
                 update.message.reply_text(
-                    "Whoa, slow down! I'm getting too many messages at once. 🚦 "
-                    "Give me about 20 seconds to catch my breath and try asking again!"
+                    "Whoa, slow down! I'm getting way too many messages at once. 🚦 "
+                    "Give me about 30 seconds to catch my breath and try asking again!"
                 )
             break
