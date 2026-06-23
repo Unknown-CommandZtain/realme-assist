@@ -4,49 +4,47 @@ import requests
 from bs4 import BeautifulSoup
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
-from config import VERIFIED_USERS, CONTROL_GROUP, OFFTOPIC_GROUP, SUPPORT_GROUP, ADMINS
+from serpapi import GoogleSearch
+# Added SERPAPI_KEY to your config imports
+from config import VERIFIED_USERS, CONTROL_GROUP, OFFTOPIC_GROUP, SUPPORT_GROUP, ADMINS, SERPAPI_KEY
 
 from utils import delay_group, delay_group_preview, delay_html, remove_message, schedule_delete
 
 def search_realme_model(rmx_code):
-    """Dynamically searches Yahoo to find the phone name for an RMX code."""
-    # We secretly add 'gsmarena' to force a clean, highly structured search result
-    url = f"https://search.yahoo.com/search?p=Realme+{rmx_code}+gsmarena"
-    
-    # We use a modern, complete browser User-Agent so Yahoo doesn't flag us as a script
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    """Dynamically searches Google via SerpApi to find the phone name for an RMX code."""
+    params = {
+        "engine": "google",
+        "q": f"Realme {rmx_code} gsmarena",
+        "api_key": SERPAPI_KEY
     }
     
     try:
-        response = requests.get(url, headers=headers, timeout=5)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        organic_results = results.get("organic_results", [])
+        
+        if organic_results:
+            title = organic_results[0].get("title", "")
             
-            # Yahoo stores the result title inside an <h3> tag with the class "title"
-            first_result = soup.find('h3', class_='title')
-            if first_result:
-                title = first_result.text.strip()
-                
-                # 1. Chop off website names (like "- GSMArena")
-                clean_title = title.split('|')[0].split('-')[0]
-                
-                # 2. Remove the RMX code and its parentheses
-                clean_title = re.sub(rf'\(?{rmx_code}\)?', '', clean_title, flags=re.IGNORECASE)
-                
-                # 3. Strip out expanded junk words
-                junk_words = [
-                    r"specs?", r"review", r"price", r"release date", r"gsmarena", 
-                    r"kimovil", r"unboxing", r"technical", r"specifications", r"full", r"phone"
-                ]
-                for word in junk_words:
-                    clean_title = re.sub(rf'(?i)\b{word}\b', '', clean_title)
-                
-                # 4. Clean up any leftover double spaces and return!
-                return re.sub(r'\s+', ' ', clean_title).strip()
+            # 1. Chop off website names (like "- GSMArena")
+            clean_title = title.split('|')[0].split('-')[0]
+            
+            # 2. Remove the RMX code and its parentheses
+            clean_title = re.sub(rf'\(?{rmx_code}\)?', '', clean_title, flags=re.IGNORECASE)
+            
+            # 3. Strip out expanded junk words
+            junk_words = [
+                r"specs?", r"review", r"price", r"release date", r"gsmarena", 
+                r"kimovil", r"unboxing", r"technical", r"specifications", r"full", r"phone"
+            ]
+            for word in junk_words:
+                clean_title = re.sub(rf'(?i)\b{word}\b', '', clean_title)
+            
+            # 4. Clean up any leftover double spaces and return!
+            return re.sub(r'\s+', ' ', clean_title).strip()
                 
     except Exception as e:
-        print(f"Web search failed for {rmx_code}: {e}")
+        print(f"SerpApi search failed for {rmx_code}: {e}")
         
     return "Unknown Realme Device"
 
