@@ -6,7 +6,7 @@ These are messages that can appear in both groups or in private.
 import os 
 from telegram import Update, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext
-from config import VERIFIED_USERS, CONTROL_GROUP, OFFTOPIC_GROUP, SUPPORT_GROUP, ADMINS
+from config import VERIFIED_USERS, CONTROL_GROUP, SUPPORT_GROUP, ADMINS
 
 from utils import delay_group, delay_group_preview, delay_html, remove_message
 
@@ -48,9 +48,6 @@ def cool(update: Update, context: CallbackContext):
 
 def polls(update: Update, context: CallbackContext):
     update.message.reply_text("Current polls: None 📊")
-
-def private_not_available(update: Update, context: CallbackContext):
-    update.message.reply_text("This command is not available in private chat.")
 
 def benchmark(update: Update, context: CallbackContext):
     """Handle for /benchmark."""
