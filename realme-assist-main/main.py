@@ -27,10 +27,7 @@ from messages.general import (
     polls,
     private_not_available,
     realistic,
-    rules, about, ban, warn, unwarn, resolve_model, info
-)
-from messages.offtopic import (
-    move_to_support
+    rules, about, ban, warn, unwarn, resolve_model, info, chat_with_gemini
 )
 from messages.support import (
     android16,
@@ -46,7 +43,6 @@ from messages.support import (
     fps,
     gcam,
     manual,
-    move_to_offtopic,
     push,
     ram,
     rant,
@@ -55,7 +51,6 @@ from messages.support import (
 )
 from postgres import PostgresPersistence
 from utils import remove_message
-from messages.general import chat_with_gemini
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -116,14 +111,13 @@ if __name__ == "__main__":
     dp.add_handler(CommandHandler("unwarn", unwarn))
     dp.add_handler(CommandHandler("ban", ban))
 
-    # Support (REMOVED GROUP FILTERS)
+    # Support
     dp.add_handler(CommandHandler("android16", android16))
     dp.add_handler(CommandHandler("aod", aod))
     dp.add_handler(CommandHandler("apk", apk))
     dp.add_handler(CommandHandler("ask", ask))
     dp.add_handler(CommandHandler("eol", eol))
     dp.add_handler(CommandHandler("rumor", rumor))
-
     dp.add_handler(CommandHandler("battery", battery))
     dp.add_handler(CommandHandler("benchmark", benchmark))
     dp.add_handler(CommandHandler("bug", bug))
@@ -131,7 +125,6 @@ if __name__ == "__main__":
     dp.add_handler(CommandHandler("form", form))
     dp.add_handler(CommandHandler("help", commands))
     dp.add_handler(CommandHandler("manual", manual))
-    dp.add_handler(CommandHandler("offtopic", move_to_offtopic))
     dp.add_handler(CommandHandler("push", push))
     dp.add_handler(CommandHandler("stable", stable))
     dp.add_handler(CommandHandler("fooview", fooview))
@@ -140,32 +133,26 @@ if __name__ == "__main__":
     dp.add_handler(CommandHandler("whatsapp", whatsapp))
     dp.add_handler(CommandHandler("miss", miss))
 
-    # Personal opinion (REMOVED GROUP FILTERS)
+    # Personal opinion
     dp.add_handler(CommandHandler("fps", fps))
     dp.add_handler(CommandHandler("ram", ram))
     dp.add_handler(CommandHandler("rant", rant))
 
-    # Offtopics (REMOVED GROUP FILTERS)
-    dp.add_handler(CommandHandler("support", move_to_support))
-
-    # Control (Kept Admin filters but removed chat group filter)
+    # Control
     dp.add_handler(CommandHandler("clear", clear, Filters.user(config.ADMINS)))
     dp.add_handler(CommandHandler("reset", reset, Filters.user(config.ADMINS)))
 
-   # Crap
+    # Crap
     dp.add_handler(CommandHandler("banana", banana))
     dp.add_handler(CommandHandler("realistic", realistic))
 
     # ====== SMART GEMINI FILTER ======
-    from telegram.ext import MessageHandler, Filters
-
     # Trigger rule 1: It's a private chat
     private_filter = Filters.chat_type.private
 
     # Trigger rule 2: It's a group, AND the bot's username is explicitly mentioned/tagged
     group_mention_filter = (Filters.chat_type.groups | Filters.chat_type.supergroup) & Filters.entity("mention")
 
-    # Combine them: Fire the AI if it's a normal text message in Private OR a Mention in Groups
     # Combine them: Fire the AI if it's text OR a photo, and applies the private/group rules
     dp.add_handler(
         MessageHandler(
