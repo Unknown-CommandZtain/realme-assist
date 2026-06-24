@@ -6,7 +6,7 @@ from telegram import Update, ParseMode
 from telegram.ext import CallbackContext
 from serpapi import GoogleSearch
 # Added SERPAPI_KEY to your config imports
-from config import VERIFIED_USERS, CONTROL_GROUP, OFFTOPIC_GROUP, SUPPORT_GROUP, ADMINS, SERPAPI_KEY
+from config import VERIFIED_USERS, CONTROL_GROUP, SUPPORT_GROUP, ADMINS, SERPAPI_KEY
 
 from utils import delay_group, delay_group_preview, delay_html, remove_message, schedule_delete
 
