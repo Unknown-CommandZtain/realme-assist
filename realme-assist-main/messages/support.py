@@ -3,7 +3,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import CallbackContext
 
-from config import ADMINS, OFFTOPIC_GROUP
+from config import ADMINS
 from utils import (
     delay_group,
     message_button_url,
@@ -63,70 +63,6 @@ def whatsapp(update: Update, context: CallbackContext):
     )
     button_text = "Message Support 💬"
     button_url = "https://wa.me/+919711012312"
-
-    if update.message.reply_to_message:
-        update.message.reply_to_message.reply_text(
-            "Hey {} 🤖\n\n".format(update.message.reply_to_message.from_user.name)
-            + text,
-            ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup.from_button(
-                InlineKeyboardButton(button_text, button_url)
-            ),
-        )
-    else:
-        reply_message = context.bot.send_message(
-            update.message.chat_id,
-            text,
-            ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup.from_button(
-                InlineKeyboardButton(button_text, button_url)
-            ),
-        )
-        context.job_queue.run_once(
-            delete, 600, reply_message.chat_id, str(reply_message.message_id)
-        )
-
-def move_to_offtopic(update: Update, context: CallbackContext):
-    if (
-            update.message.reply_to_message is not None
-            and update.message.from_user.id in ADMINS
-    ):
-        update.message.delete()
-        original_msg = update.message.reply_to_message.copy(
-            OFFTOPIC_GROUP,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="Original Message ➡️",
-                            url=update.message.reply_to_message.link
-                        )
-                    ]
-                ]
-            ),
-        )
-        moved_link = "https://t.me/realme_offtopic/" + str(original_msg.message_id)
-        message_button_url(
-            update,
-            context,
-            "Hey {} 🤖"
-            "\n\nThis is getting pretty off-topic now."
-            "\n\nI moved the message to @realme_offtopic"
-            "\n\nPlease continue the discussion there.".format(
-                update.message.reply_to_message.from_user.name
-            ),
-            "Continue here 😉",
-            moved_link
-        )
-    else:
-        delay_group(
-            update,
-            context,
-            "Hey guys 🤖"
-            "\n\nFeel free to join @realme_offtopic to discuss topics "
-            "not related to Realme or Android."
-            "\n\nYou can also send Links and Stickers there 🥳"
-        )
 
 # FIXED: Added explicit UTF-8 decoding to read modern characters perfectly
 def android16(update: Update, context: CallbackContext):
