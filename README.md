@@ -24,6 +24,5 @@ Originally a standard command-based bot, Realme Assist has been upgraded with **
 * `/messages/` — Contains all the modular logic:
   * `general.py` — Houses the Gemini AI engine, vision processing, and smart retry loops.
   * `support.py` — Static support logic and routing.
-  * `offtopic.py` — Standard text handling.
   * `control.py` — Admin and moderation tools.
 * `/resources/` — Stores static images and media used by the bot.
