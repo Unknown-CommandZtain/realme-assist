@@ -22,7 +22,7 @@ Originally a standard command-based bot, Realme Assist has been upgraded with **
 ## 📁 Project Structure
 * `main.py` — The core script that initializes the bot, database, and smart AI routing filters.
 * `/messages/` — Contains all the modular logic:
-  * `general.py` / `ai.py` — Houses the Gemini AI engine, vision processing, and smart retry loops.
+  * `general.py` — Houses the Gemini AI engine, vision processing, and smart retry loops.
   * `support.py` — Static support logic and routing.
   * `offtopic.py` — Standard text handling.
   * `control.py` — Admin and moderation tools.
