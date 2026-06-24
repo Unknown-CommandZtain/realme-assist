@@ -9,7 +9,7 @@ Originally a standard command-based bot, Realme Assist has been upgraded with **
 * **👁️ Multimodal Vision:** Users can send screenshots of Android battery drains, error popups, or broken code. The bot downloads the image, analyzes it alongside the user's text, and diagnoses the problem instantly.
 * **🚦 Auto-Healing Traffic Management:** Built with a custom Regex-powered Retry Loop. If the bot hits a global server overload or a rate limit during massive group spam, it intercepts Google's exact timeout request, puts the message to sleep, and successfully delivers it seconds later without crashing.
 * **🛡️ Markdown Crash Protection:** Features a "Smart Fallback" that instantly intercepts Telegram parse errors and resends the message as raw text, guaranteeing zero failed deliveries.
-* **🤫 Smart Group Privacy:** In private 1-on-1 chats, the bot is fully conversational. In massive group chats, it stays completely silent until explicitly tagged (e.g., `@YourBotName`), preventing API exhaustion.
+* **🤫 Smart Group Privacy:** In private 1-on-1 chats, the bot is fully conversational. In massive group chats, it stays completely silent until explicitly tagged (e.g., `@realme_assistBot`), preventing API exhaustion.
 * **👑 Admin & Legacy Controls:** Fully retains standard Telegram command structures (like `/bug`, `/debloat`) for instant, hard-coded template responses and secure group administrator tools.
 
 ## 🛠️ Tech Stack
