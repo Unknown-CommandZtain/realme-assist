@@ -166,9 +166,10 @@ if __name__ == "__main__":
     group_mention_filter = (Filters.chat_type.groups | Filters.chat_type.supergroup) & Filters.entity("mention")
 
     # Combine them: Fire the AI if it's a normal text message in Private OR a Mention in Groups
+    # Combine them: Fire the AI if it's text OR a photo, and applies the private/group rules
     dp.add_handler(
         MessageHandler(
-            Filters.text & ~Filters.command & (private_filter | group_mention_filter), 
+            (Filters.text | Filters.photo) & ~Filters.command & (private_filter | group_mention_filter), 
             chat_with_gemini
         )
     )
